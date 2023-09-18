@@ -1,9 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "GYfY/B4yXKa/kEIN9AOwJQbwldYC7qAHuM1na7ymFbnyTCedeaEUSZdVFSM6+v78fVdLu4+mRt19CpR+DfwJLg==",
+  "dgSpecHash": "XW93fQwwHACwTLWRZwsM8Klr7e5Grf9hgBKgRFEZW7JnwpgElJIS6KHV8TOOCqF03kONDQawcuE7LCVODhM0SQ==",
   "success": true,
   "projectFilePath": "d:\\projects\\UserAuthWebAPI\\UserAuthJWT\\UserAuthJWT.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\sanya\\.nuget\\packages\\bcrypt.net-next\\4.0.3\\bcrypt.net-next.4.0.3.nupkg.sha512",
     "C:\\Users\\sanya\\.nuget\\packages\\microsoft.aspnetcore.openapi\\7.0.11\\microsoft.aspnetcore.openapi.7.0.11.nupkg.sha512",
     "C:\\Users\\sanya\\.nuget\\packages\\microsoft.extensions.apidescription.server\\6.0.5\\microsoft.extensions.apidescription.server.6.0.5.nupkg.sha512",
     "C:\\Users\\sanya\\.nuget\\packages\\microsoft.openapi\\1.4.3\\microsoft.openapi.1.4.3.nupkg.sha512",
