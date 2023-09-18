@@ -1,39 +1,70 @@
+using System.Security.Claims;
+using System.Text;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+
 using UserAuthJWT.Models;
 
-namespace UserAuthJWT.Controllers;
-
-[ApiController]
-[Route("api/[controller]")]
-public class AuthController : ControllerBase
+namespace UserAuthJWT.Controllers
 {
-    public static User user = new User();
-
-    [HttpPost("register")]
-    public ActionResult<User> Register(UserDto request)
+    [ApiController]
+    [Route("api/[controller]")]
+    public class AuthController : ControllerBase
     {
-        string passwordHash = BCrypt.Net.BCrypt.HashPassword(request.Password);
+        public static User user = new User();
+        private readonly IConfiguration _configuration;
 
-        user.Username = request.Username;
-        user.PasswordHash = passwordHash;
-
-        return Ok(user);
-    }
-
-    [HttpPost("login")]
-    public ActionResult<User> Login(UserDto request)
-    {
-        if (user.Username != request.Username)
+        public AuthController(IConfiguration configuration)
         {
-            return BadRequest("User not found");
+            _configuration = configuration;
         }
 
-        if (!BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
+        [HttpPost("register")]
+        public ActionResult<User> Register(UserDto request)
         {
-            return BadRequest("Wrong password");
+            string passwordHash = BCrypt.Net.BCrypt.HashPassword(request.Password);
+
+            user.Username = request.Username;
+            user.PasswordHash = passwordHash;
+
+            return Ok(user);
         }
 
-        return Ok(user);
+        [HttpPost("login")]
+        public ActionResult<User> Login(UserDto request)
+        {
+            if (user.Username != request.Username)
+            {
+                return BadRequest("User not found");
+            }
+
+            if (!BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
+            {
+                return BadRequest("Wrong password");
+            }
+
+            string token = CreateToken(user);
+            return Ok(token);
+        }
+
+        private string CreateToken(User user)
+        {
+            List<Claim> claims = new List<Claim> { new Claim(ClaimTypes.Name, user.Username) };
+
+            var configurationValue = _configuration.GetSection("AppSettings.Token").Value!;
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configurationValue));
+
+            var cred = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
+
+            var expires = DateTime.Now.AddDays(1);
+
+            var token = new JwtSecurityToken(claims: claims, expires: expires, signingCredentials: cred);
+
+            var jwt = new JwtSecurityTokenHandler().WriteToken(token);
+
+            return jwt;
+        }
     }
 }
